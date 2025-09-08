@@ -1,0 +1,113 @@
+============================================================
+Guia Completo: Criando Seu Próprio Funtoo com Stage3 + Ebuilds do Gentoo
+============================================================
+
+Este tutorial mostra como instalar um stage3 do Funtoo e criar um meta-repo
+personalizado usando os ebuilds do Gentoo como base. Dessa forma você terá
+um "Funtoo pessoal", controlando sua própria árvore de pacotes.
+
+------------------------------------------------------------
+1) Baixar e instalar Stage3 do Funtoo
+------------------------------------------------------------
+
+# baixar stage3 (ajuste a URL conforme última versão disponível)
+wget https://build.funtoo.org/next/x86-64bit/2023-xx/stage3-latest.tar.xz
+
+# extrair para seu chroot (exemplo: /mnt/funtoo)
+tar xpvf stage3-latest.tar.xz -C /mnt/funtoo
+
+------------------------------------------------------------
+2) Clonar o repositório oficial do Gentoo
+------------------------------------------------------------
+
+# clonar ebuilds do Gentoo
+git clone https://github.com/gentoo/gentoo.git /var/tmp/gentoo-ebuilds
+
+------------------------------------------------------------
+3) Criar estrutura de meta-repo personalizada
+------------------------------------------------------------
+
+# criar diretório para seu meta-repo
+mkdir -p /var/git/my-funtoo-meta-repo
+
+# exemplo de kits inspirados no Funtoo original
+/var/git/my-funtoo-meta-repo/
+ ├── core-kit/
+ │    ├── sys-libs/
+ │    ├── sys-devel/
+ │    ├── profiles/
+ │    └── ...
+ ├── python-kit/
+ │    └── dev-lang/python*
+ ├── desktop-kit/
+ │    └── x11-base/
+ └── meta-repo
+
+# copiar pacotes do Gentoo para os kits
+mkdir -p /var/git/my-funtoo-meta-repo/core-kit
+cp -r /var/tmp/gentoo-ebuilds/sys-libs /var/git/my-funtoo-meta-repo/core-kit/
+cp -r /var/tmp/gentoo-ebuilds/sys-devel /var/git/my-funtoo-meta-repo/core-kit/
+
+------------------------------------------------------------
+4) Criar perfis para cada kit
+------------------------------------------------------------
+
+# criar perfil exemplo para core-kit
+mkdir -p /var/git/my-funtoo-meta-repo/core-kit/profiles/funtoo/1.4/linux-gnu/arch/x86-64bit
+
+# adicionar um README simples
+echo "profile for my-funtoo core-kit" > /var/git/my-funtoo-meta-repo/core-kit/profiles/funtoo/1.4/linux-gnu/arch/x86-64bit/README
+
+------------------------------------------------------------
+5) Inicializar Git no meta-repo
+------------------------------------------------------------
+
+cd /var/git/my-funtoo-meta-repo
+git init
+git add .
+git commit -m "Meu meta-repo inicial baseado no Gentoo"
+
+------------------------------------------------------------
+6) Configurar Portage para usar seu repositório
+------------------------------------------------------------
+
+# criar arquivo de configuração em /etc/portage/repos.conf/my-funtoo.conf
+[my-funtoo]
+location = /var/git/my-funtoo-meta-repo
+masters = gentoo
+auto-sync = no
+
+------------------------------------------------------------
+7) Atualizar o sistema
+------------------------------------------------------------
+
+# atualizar configuração (sem sync externo)
+ego sync --config-only
+
+# sincronizar meta-repo personalizado
+emerge --sync
+
+# atualizar pacotes do sistema
+emerge -auDN @world
+
+------------------------------------------------------------
+8) Dicas e Desafios
+------------------------------------------------------------
+
+- Kits: você precisa decidir como organizar os pacotes (core, python, desktop).
+- Patches: alguns ebuilds podem precisar de ajustes para funcionar no Funtoo.
+- Estabilidade: mantenha branches Git "congeladas" para ter snapshots estáveis.
+- Perfis: você pode criar seus próprios perfis em cada kit para personalizar.
+
+------------------------------------------------------------
+Resumo
+------------------------------------------------------------
+
+1. Instale o stage3 do Funtoo.
+2. Clone os ebuilds do Gentoo.
+3. Estruture seu próprio meta-repo em kits.
+4. Configure perfis e inicialize o Git.
+5. Aponte o Portage para o seu meta-repo.
+6. Atualize com emerge.
+
+Assim você terá um Funtoo funcional, mas com repositório e controle TOTAL seus.
