@@ -1,0 +1,156 @@
+============================================================
+Exemplo Prático: Organizando Ebuilds do Gentoo em Kits do Funtoo
+============================================================
+
+Objetivo:
+- Criar um meta-repo pessoal do Funtoo usando ebuilds do Gentoo.
+- Organizar os pacotes em kits e perfis para uso com emerge + ego.
+
+------------------------------------------------------------
+Estrutura de Diretórios do Meta-Repo
+------------------------------------------------------------
+
+/var/git/my-funtoo-meta-repo/
+ ├── core-kit/
+ │    ├── sys-libs/
+ │    ├── sys-devel/
+ │    ├── virtual/
+ │    └── profiles/
+ ├── python-kit/
+ │    ├── dev-lang/
+ │    └── profiles/
+ ├── desktop-kit/
+ │    ├── x11-base/
+ │    ├── x11-libs/
+ │    ├── kde-apps/
+ │    ├── gnome-extra/
+ │    └── profiles/
+ ├── media-kit/
+ │    ├── media-libs/
+ │    ├── media-video/
+ │    ├── media-sound/
+ │    └── profiles/
+ ├── net-kit/
+ │    ├── net-libs/
+ │    ├── net-misc/
+ │    └── profiles/
+ └── dev-kit/
+      ├── dev-util/
+      ├── dev-db/
+      ├── dev-php/
+      └── profiles/
+
+------------------------------------------------------------
+1) Core Kit
+------------------------------------------------------------
+
+mkdir -p /var/git/my-funtoo-meta-repo/core-kit/sys-libs
+cp -r /var/tmp/gentoo-ebuilds/sys-libs/glibc* /var/git/my-funtoo-meta-repo/core-kit/sys-libs/
+cp -r /var/tmp/gentoo-ebuilds/sys-libs/zlib* /var/git/my-funtoo-meta-repo/core-kit/sys-libs/
+
+mkdir -p /var/git/my-funtoo-meta-repo/core-kit/sys-devel
+cp -r /var/tmp/gentoo-ebuilds/sys-devel/gcc* /var/git/my-funtoo-meta-repo/core-kit/sys-devel/
+cp -r /var/tmp/gentoo-ebuilds/sys-devel/binutils* /var/git/my-funtoo-meta-repo/core-kit/sys-devel/
+
+mkdir -p /var/git/my-funtoo-meta-repo/core-kit/virtual
+cp -r /var/tmp/gentoo-ebuilds/sys-apps/bash* /var/git/my-funtoo-meta-repo/core-kit/virtual/
+cp -r /var/tmp/gentoo-ebuilds/sys-apps/coreutils* /var/git/my-funtoo-meta-repo/core-kit/virtual/
+
+mkdir -p /var/git/my-funtoo-meta-repo/core-kit/profiles/funtoo/1.4/linux-gnu/arch/x86-64bit
+echo "Core kit profile" > /var/git/my-funtoo-meta-repo/core-kit/profiles/funtoo/1.4/linux-gnu/arch/x86-64bit/README
+
+------------------------------------------------------------
+2) Python Kit
+------------------------------------------------------------
+
+mkdir -p /var/git/my-funtoo-meta-repo/python-kit/dev-lang
+cp -r /var/tmp/gentoo-ebuilds/dev-lang/python* /var/git/my-funtoo-meta-repo/python-kit/dev-lang/
+mkdir -p /var/git/my-funtoo-meta-repo/python-kit/profiles
+echo "Python kit profile" > /var/git/my-funtoo-meta-repo/python-kit/profiles/README
+
+------------------------------------------------------------
+3) Desktop Kit
+------------------------------------------------------------
+
+mkdir -p /var/git/my-funtoo-meta-repo/desktop-kit/x11-base
+cp -r /var/tmp/gentoo-ebuilds/x11-base/xorg-server* /var/git/my-funtoo-meta-repo/desktop-kit/x11-base/
+cp -r /var/tmp/gentoo-ebuilds/x11-base/xorg-drivers* /var/git/my-funtoo-meta-repo/desktop-kit/x11-base/
+
+mkdir -p /var/git/my-funtoo-meta-repo/desktop-kit/x11-libs
+cp -r /var/tmp/gentoo-ebuilds/x11-libs/libX11* /var/git/my-funtoo-meta-repo/desktop-kit/x11-libs/
+
+mkdir -p /var/git/my-funtoo-meta-repo/desktop-kit/kde-apps
+cp -r /var/tmp/gentoo-ebuilds/kde-apps/plasma-desktop* /var/git/my-funtoo-meta-repo/desktop-kit/kde-apps/
+
+mkdir -p /var/git/my-funtoo-meta-repo/desktop-kit/gnome-extra
+cp -r /var/tmp/gentoo-ebuilds/gnome-extra/nautilus* /var/git/my-funtoo-meta-repo/desktop-kit/gnome-extra/
+
+mkdir -p /var/git/my-funtoo-meta-repo/desktop-kit/profiles
+echo "Desktop kit profile" > /var/git/my-funtoo-meta-repo/desktop-kit/profiles/README
+
+------------------------------------------------------------
+4) Media Kit
+------------------------------------------------------------
+
+mkdir -p /var/git/my-funtoo-meta-repo/media-kit/media-libs
+cp -r /var/tmp/gentoo-ebuilds/media-libs/ffmpeg* /var/git/my-funtoo-meta-repo/media-kit/media-libs/
+
+mkdir -p /var/git/my-funtoo-meta-repo/media-kit/media-video
+cp -r /var/tmp/gentoo-ebuilds/media-video/mpv* /var/git/my-funtoo-meta-repo/media-kit/media-video/
+
+mkdir -p /var/git/my-funtoo-meta-repo/media-kit/media-sound
+cp -r /var/tmp/gentoo-ebuilds/media-sound/pulseaudio* /var/git/my-funtoo-meta-repo/media-kit/media-sound/
+
+mkdir -p /var/git/my-funtoo-meta-repo/media-kit/profiles
+echo "Media kit profile" > /var/git/my-funtoo-meta-repo/media-kit/profiles/README
+
+------------------------------------------------------------
+5) Net Kit
+------------------------------------------------------------
+
+mkdir -p /var/git/my-funtoo-meta-repo/net-kit/net-libs
+cp -r /var/tmp/gentoo-ebuilds/net-libs/libcurl* /var/git/my-funtoo-meta-repo/net-kit/net-libs/
+
+mkdir -p /var/git/my-funtoo-meta-repo/net-kit/net-misc
+cp -r /var/tmp/gentoo-ebuilds/net-misc/wget* /var/git/my-funtoo-meta-repo/net-kit/net-misc/
+cp -r /var/tmp/gentoo-ebuilds/net-misc/openssh* /var/git/my-funtoo-meta-repo/net-kit/net-misc/
+
+mkdir -p /var/git/my-funtoo-meta-repo/net-kit/profiles
+echo "Net kit profile" > /var/git/my-funtoo-meta-repo/net-kit/profiles/README
+
+------------------------------------------------------------
+6) Dev Kit
+------------------------------------------------------------
+
+mkdir -p /var/git/my-funtoo-meta-repo/dev-kit/dev-util
+cp -r /var/tmp/gentoo-ebuilds/dev-util/git* /var/git/my-funtoo-meta-repo/dev-kit/dev-util/
+
+mkdir -p /var/git/my-funtoo-meta-repo/dev-kit/dev-db
+cp -r /var/tmp/gentoo-ebuilds/dev-db/sqlite* /var/git/my-funtoo-meta-repo/dev-kit/dev-db/
+
+mkdir -p /var/git/my-funtoo-meta-repo/dev-kit/dev-php
+cp -r /var/tmp/gentoo-ebuilds/dev-php/php* /var/git/my-funtoo-meta-repo/dev-kit/dev-php/
+
+mkdir -p /var/git/my-funtoo-meta-repo/dev-kit/profiles
+echo "Dev kit profile" > /var/git/my-funtoo-meta-repo/dev-kit/profiles/README
+
+------------------------------------------------------------
+Próximos Passos
+------------------------------------------------------------
+
+1. Inicializar Git no meta-repo:
+cd /var/git/my-funtoo-meta-repo
+git init
+git add .
+git commit -m "Meta-repo inicial com kits e ebuilds adaptados do Gentoo"
+
+2. Configurar Portage:
+[my-funtoo]
+location = /var/git/my-funtoo-meta-repo
+masters = gentoo
+auto-sync = no
+
+3. Testar sincronização e atualização:
+ego sync --config-only
+emerge --sync
+emerge -auDN @world
