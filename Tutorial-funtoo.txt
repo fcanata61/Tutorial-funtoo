@@ -1,0 +1,134 @@
+============================================================
+Guia Completo: Usando e Atualizando o Último Estado do Repositório do Funtoo
+============================================================
+
+Este tutorial mostra como clonar, manter e atualizar o meta-repo do Funtoo,
+comandos práticos, cuidados e fluxo de manutenção.
+
+------------------------------------------------------------
+1) Planejamento e backups (obrigatório)
+------------------------------------------------------------
+
+Antes de mexer no meta-repo, faça backup das coisas importantes:
+
+# backup /etc (configurações)
+tar czpf /root/etc-backup-$(date +%F).tar.gz /etc
+
+# backup do world file
+cp -a /var/lib/portage/world /root/world.backup
+
+# opcional: backup do /var/git/meta-repo se já existir
+[ -d /var/git/meta-repo ] && tar czpf /root/meta-repo-backup-$(date +%F).tar.gz /var/git/meta-repo
+
+------------------------------------------------------------
+2) Pré-requisitos
+------------------------------------------------------------
+
+# instalar git e python
+emerge --ask dev-vcs/git dev-lang/python
+
+------------------------------------------------------------
+3) Método RECOMENDADO: usar ego self-hosted
+------------------------------------------------------------
+
+# clonar ego
+cd /var/tmp
+git clone https://github.com/funtoo/ego.git
+cd ego
+
+# sincronizar meta-repo com ego (cria /var/git/meta-repo)
+./ego sync
+
+# em containers ou meta-repo read-only:
+./ego sync --config-only
+
+------------------------------------------------------------
+4) Método ALTERNATIVO: clonar meta-repo direto (git)
+------------------------------------------------------------
+
+# clonar meta-repo manualmente
+git clone https://github.com/funtoo/meta-repo /var/git/meta-repo
+cd /var/git/meta-repo
+
+# inicializar kits
+git submodule update --init --recursive
+
+# atualizar depois
+git fetch origin
+git pull --recurse-submodules
+git submodule update --init --recursive --remote
+
+------------------------------------------------------------
+5) Permissões
+------------------------------------------------------------
+
+mkdir -p /var/git
+chown -R root:root /var/git
+chmod -R 755 /var/git
+
+------------------------------------------------------------
+6) Verificar estado dos kits
+------------------------------------------------------------
+
+ego kit status
+ego kit list
+
+# último commit do meta-repo
+git -C /var/git/meta-repo log -1 --format="%ci %h %s"
+
+------------------------------------------------------------
+7) Atualizar o sistema
+------------------------------------------------------------
+
+# atualizar kits/meta-repo
+ego sync
+
+# ver atualizações pendentes
+emerge --pretend --update --deep --newuse @world
+
+# aplicar atualizações
+emerge --ask --update --deep --newuse @world
+
+------------------------------------------------------------
+8) Containers ou repositório somente leitura
+------------------------------------------------------------
+
+./ego sync --config-only
+
+------------------------------------------------------------
+9) Automação e mirror (opcional)
+------------------------------------------------------------
+
+# criar mirror bare
+git clone --mirror https://github.com/funtoo/meta-repo.git /srv/git/meta-repo.git
+
+# atualizar mirror
+cd /srv/git/meta-repo.git
+git remote update --prune
+
+------------------------------------------------------------
+10) Problemas comuns
+------------------------------------------------------------
+
+- Conflitos massivos: restaure backups, revise USE flags antes de atualizar.
+- Permissões: use chown/chmod em /var/git.
+- Kits com estabilidade diferente: use ego kit status para verificar branches.
+- Projeto em hobby/read-only: atualizações podem ser esparsas.
+
+------------------------------------------------------------
+11) Avançado
+------------------------------------------------------------
+
+Ferramentas usadas pelo Funtoo para gerar kits/meta-repo:
+- metatools
+- metro
+
+------------------------------------------------------------
+Check-list rápido
+------------------------------------------------------------
+
+1. Backup (/etc, world, meta-repo)
+2. Instalar git/python
+3. Clonar ego e rodar ./ego sync
+4. Verificar kits: ego kit status
+5. Atualizar mundo: emerge -auDN @world
