@@ -1,0 +1,114 @@
+============================================================
+Mapa de Kits do Funtoo Personalizado com Exemplos de Programas
+============================================================
+
+Objetivo:
+- Organizar os ebuilds do Gentoo em kits estilo Funtoo.
+- Ter uma referência para criar seu meta-repo próprio.
+
+------------------------------------------------------------
+1) Core Kit (fundamental para o sistema)
+------------------------------------------------------------
+
+- sys-libs/
+    * glibc
+    * zlib
+    * libffi
+    * ncurses
+- sys-devel/
+    * gcc
+    * binutils
+    * make
+    * cmake
+    * autoconf
+- virtual/
+    * sys-apps/bash
+    * sys-apps/coreutils
+    * sys-apps/file
+- profiles/
+    * perfis do sistema (ex.: x86-64bit, generic_64)
+
+------------------------------------------------------------
+2) Python Kit (linguagem e bibliotecas)
+------------------------------------------------------------
+
+- dev-lang/python
+- dev-python/pip
+- dev-python/setuptools
+- dev-python/wheel
+- dev-python/numpy (opcional)
+- dev-python/pandas (opcional)
+
+------------------------------------------------------------
+3) Desktop Kit (interface gráfica e apps)
+------------------------------------------------------------
+
+- x11-base/
+    * xorg-server
+    * xorg-drivers
+    * xorg-apps
+- x11-libs/
+    * libX11
+    * libXext
+    * libXrender
+- kde-apps/
+    * plasma-desktop
+    * dolphin
+    * konsole
+- gnome-extra/
+    * gnome-shell
+    * nautilus
+    * gedit
+
+------------------------------------------------------------
+4) Media Kit (áudio, vídeo, multimídia)
+------------------------------------------------------------
+
+- media-libs/
+    * ffmpeg
+    * libavcodec
+    * libavformat
+- media-video/
+    * vlc
+    * mpv
+- media-sound/
+    * pulseaudio
+    * alsa-utils
+
+------------------------------------------------------------
+5) Net Kit (rede e internet)
+------------------------------------------------------------
+
+- net-libs/
+    * libcurl
+    * libssh2
+- net-misc/
+    * wget
+    * curl
+    * openssh
+    * netcat
+    * nmap
+
+------------------------------------------------------------
+6) Dev Kit (opcional para desenvolvimento)
+------------------------------------------------------------
+
+- dev-util/
+    * git
+    * subversion
+    * ctags
+- dev-db/
+    * sqlite
+    * postgresql
+- dev-php/
+    * php
+    * php-fpm
+
+------------------------------------------------------------
+Resumo
+------------------------------------------------------------
+
+- Cada kit agrupa categorias de pacotes com lógica Funtoo.
+- Exemplo de kits: core-kit, python-kit, desktop-kit, media-kit, net-kit, dev-kit.
+- Você pode expandir os kits com base em suas necessidades de estudo.
+- Cada kit terá perfis próprios em /profiles/ para configurar USE flags, CFLAGS e arquitetura.
