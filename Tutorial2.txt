@@ -1,0 +1,124 @@
+============================================================
+Automatizando a Atualização do Seu Meta-Repo Funtoo
+============================================================
+
+Objetivo:
+- Puxar os ebuilds atualizados do Gentoo.
+- Reorganizar automaticamente em "kits" no seu meta-repo.
+- Sincronizar o Portage para usar suas mudanças.
+
+------------------------------------------------------------
+1) Estrutura recomendada de diretórios
+------------------------------------------------------------
+
+/var/git/my-funtoo-meta-repo/      # seu repositório custom
+/var/tmp/gentoo-ebuilds/           # clone atualizado do Gentoo
+/var/scripts/my-funtoo-sync.sh     # script de automação
+
+------------------------------------------------------------
+2) Criar script de sincronização
+------------------------------------------------------------
+
+# criar diretório para scripts
+mkdir -p /var/scripts
+
+# criar arquivo my-funtoo-sync.sh
+nano /var/scripts/my-funtoo-sync.sh
+
+# conteúdo do script
+------------------------------------------------------------
+#!/bin/bash
+# Script: my-funtoo-sync.sh
+# Objetivo: Atualizar meta-repo customizado a partir dos ebuilds do Gentoo
+
+set -e
+
+GENTOO_REPO="/var/tmp/gentoo-ebuilds"
+MY_REPO="/var/git/my-funtoo-meta-repo"
+
+echo "==> Atualizando repositório Gentoo..."
+if [ -d "$GENTOO_REPO/.git" ]; then
+    cd "$GENTOO_REPO"
+    git fetch origin
+    git reset --hard origin/master
+else
+    git clone https://github.com/gentoo/gentoo.git "$GENTOO_REPO"
+fi
+
+echo "==> Atualizando meta-repo custom..."
+cd "$MY_REPO"
+
+# exemplo: atualizar sys-libs e sys-devel no core-kit
+rm -rf core-kit/sys-libs core-kit/sys-devel
+cp -r "$GENTOO_REPO/sys-libs" core-kit/
+cp -r "$GENTOO_REPO/sys-devel" core-kit/
+
+# exemplo: atualizar python-kit
+rm -rf python-kit/dev-lang
+mkdir -p python-kit
+cp -r "$GENTOO_REPO/dev-lang/python"* python-kit/ || true
+
+# adicionar e commitar mudanças
+git add .
+git commit -m "Sync: atualizando ebuilds do Gentoo para kits (data: $(date +%F %T))" || true
+
+echo "==> Sincronização concluída."
+------------------------------------------------------------
+
+# tornar o script executável
+chmod +x /var/scripts/my-funtoo-sync.sh
+
+------------------------------------------------------------
+3) Rodar sincronização manualmente
+------------------------------------------------------------
+
+/var/scripts/my-funtoo-sync.sh
+
+------------------------------------------------------------
+4) Atualizar Portage
+------------------------------------------------------------
+
+# sincronizar repositório
+emerge --sync
+
+# atualizar mundo
+emerge -auDN @world
+
+------------------------------------------------------------
+5) Automatizar com cron (opcional)
+------------------------------------------------------------
+
+# editar crontab
+crontab -e
+
+# rodar sincronização todo dia às 3h da manhã
+0 3 * * * /var/scripts/my-funtoo-sync.sh >> /var/log/my-funtoo-sync.log 2>&1
+
+------------------------------------------------------------
+6) Expandindo os kits
+------------------------------------------------------------
+
+- Você pode adaptar o script para atualizar:
+  * desktop-kit (x11-base, x11-drivers, x11-libs, kde, gnome)
+  * media-kit (media-libs, media-video, media-sound)
+  * net-kit (net-misc, net-libs)
+
+- Cada bloco do script pode copiar categorias do Gentoo para o kit correto.
+
+Exemplo para desktop-kit:
+rm -rf desktop-kit/x11-base desktop-kit/x11-drivers
+cp -r "$GENTOO_REPO/x11-base" desktop-kit/
+cp -r "$GENTOO_REPO/x11-drivers" desktop-kit/
+
+------------------------------------------------------------
+Resumo da Automação
+------------------------------------------------------------
+
+1. Script puxa últimas mudanças do repositório Gentoo.
+2. Copia categorias para kits organizados no seu meta-repo.
+3. Comita mudanças automaticamente no Git.
+4. Você roda emerge --sync e emerge -auDN @world.
+5. Opcional: cron para automatizar tudo.
+
+Assim você terá um "Funtoo pessoal" sempre atualizado com base no Gentoo,
+mas estruturado no formato de kits, mantendo controle total do seu repo.
